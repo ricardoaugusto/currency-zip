@@ -26,7 +26,7 @@ class CurrencyParser:
     @staticmethod
     def run_exchange(currency_string):
         split_currency_string = currency_string.split(" to ")
-        if len(split_currency_string) is not 2:
+        if len(split_currency_string) != 2:
             raise MissingCurrencyException()
 
         result = 0
