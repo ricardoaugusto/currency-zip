@@ -1,6 +1,6 @@
 import sys
 
-from src.currency_parser import CurrencyParser
+from src.currency_parser import run_exchange
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
@@ -9,6 +9,5 @@ if __name__ == "__main__":
 
     currency_string = sys.argv[1]
 
-    parser = CurrencyParser()
-    result = parser.run_exchange(currency_string)
+    result = run_exchange(currency_string)
     print(result)
