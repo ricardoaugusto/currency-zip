@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from src import currency_parser, exchange_rate
+from src import currency_parser, exchange_rate, localization
 
 
 def test_split_currency_amount_code():
@@ -78,3 +78,17 @@ def test_run_exchange_invalid_symbol():
     invalid_currency_string = "100PPP to WWW"
     with pytest.raises(Exception):
         currency_parser.run_exchange(invalid_currency_string)
+
+
+def test_delocalized_currency():
+    result = localization.delocalize_currency("100,50", "EUR")
+    assert result == 100.5
+
+    result = localization.delocalize_currency("100,500.90", "USD")
+    assert result == 100500.90
+
+    result = localization.delocalize_currency("100,000.50", "GBP")
+    assert result == 100000.5
+
+    result = localization.delocalize_currency("100.000,05", "BRL")
+    assert result == 100000.05
