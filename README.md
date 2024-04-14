@@ -17,9 +17,9 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-Check if your .venv is set:
+_On Windows, change to `python -m venv .venv` and `source .venv\Scripts\activate`._
 
-On Windows, change to `python -m venv .venv` and `source .venv\Scripts\activate`.
+Check if your .venv is set:
 
 ```shell
 $ which python
@@ -36,8 +36,10 @@ pip install -r requirements.txt
 
 ```shell
 python czip.py "100EUR + 250USD + 1000BRL to GBP"
-440.19
+440.19GBP
 ```
+
+<img width="377" alt="example-usage" src="https://github.com/ricardoaugusto/currency-zip/assets/7663281/b19b2955-3013-4b22-b0a0-076dbdaca2e0">
 
 # Test
 
