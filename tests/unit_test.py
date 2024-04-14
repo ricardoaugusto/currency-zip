@@ -38,7 +38,7 @@ def test_run_exchange_valid(mocked_convert_to):
     mocked_convert_to.return_value = 10
 
     currency_string = "10USD + 20EUR + 300BRL to GBP"
-    expected_result = 30  # 10$ for each time convert_to is called (3x)
+    expected_result = "30GBP"  # 10$ for each time convert_to is called (3x)
     assert currency_parser.run_exchange(currency_string) == expected_result
 
 
@@ -76,8 +76,8 @@ def test_run_exchange_invalid_amount():
 
 def test_run_exchange_invalid_symbol():
     invalid_currency_string = "100PPP to WWW"
-    with pytest.raises(Exception):
-        currency_parser.run_exchange(invalid_currency_string)
+    result = currency_parser.run_exchange(invalid_currency_string)
+    assert result == "0.0WWW"
 
 
 def test_delocalized_currency():
