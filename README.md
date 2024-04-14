@@ -17,9 +17,9 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-Check if your .venv is set:
+_On Windows, change to `python -m venv .venv` and `source .venv\Scripts\activate`._
 
-On Windows, change to `python -m venv .venv` and `source .venv\Scripts\activate`.
+Check if your .venv is set:
 
 ```shell
 $ which python
