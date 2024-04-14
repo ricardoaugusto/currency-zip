@@ -92,3 +92,8 @@ def test_delocalized_currency():
 
     result = localization.delocalize_currency("100.000,05", "BRL")
     assert result == 100000.05
+
+
+def test_delocalized_currency_wrong_input():
+    result = localization.delocalize_currency("100.500,00", "USD")
+    assert result == 100.5
