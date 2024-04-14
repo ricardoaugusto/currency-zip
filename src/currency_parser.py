@@ -55,4 +55,4 @@ def run_exchange(currency_string):
         for amount, from_currency in currencies:
             result += convert_to(amount, from_currency, to_currency)
 
-    return result
+    return f"{result}{to_currency}"
