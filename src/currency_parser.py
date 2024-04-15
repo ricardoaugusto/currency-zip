@@ -1,5 +1,4 @@
 import re
-import sys
 from datetime import datetime
 
 from src.exceptions.missing_currency_exception import MissingCurrencyException
@@ -49,7 +48,6 @@ def parse_date(date_str):
         return datetime.strptime(date_str, "%Y%m%d").date()
     except ValueError:
         print("Invalid date format. Please provide the date in YYYYMMDD format.")
-        # Optionally, you can return None or any other default value instead of raising an exception
         return None
 
 
@@ -61,7 +59,7 @@ def run_exchange(currency_string, when=None):
 
     :param currency_string: The currency string to parse.
     :param when: Optional. The date to use for exchange rates.
-                 Defaults to datetime.now() if not provided.
+                 Defaults to datetime.now().date() if not provided.
                  Can be a string in YYYYMMDD format or a datetime object.
     :return: The result of the exchange.
     """
@@ -70,10 +68,12 @@ def run_exchange(currency_string, when=None):
     elif isinstance(when, str):
         when = parse_date(when)
 
+    # If no currency to convert to was given
     split_currency_string = currency_string.split(" to ")
     if len(split_currency_string) != 2:
         raise MissingCurrencyException()
 
+    # Finally gets the exchange rate and sums everything
     result = 0
     to_currency = split_currency_string[1]
     currencies = parse_currency_string(split_currency_string[0])
