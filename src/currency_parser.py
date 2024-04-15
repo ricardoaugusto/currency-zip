@@ -1,4 +1,6 @@
 import re
+import sys
+from datetime import datetime
 
 from src.exceptions.missing_currency_exception import MissingCurrencyException
 from src.exchange_rate import convert_to
@@ -35,15 +37,39 @@ def parse_currency_string(currency_string):
     return currency_list
 
 
-def run_exchange(currency_string):
+def parse_date(date_str):
+    """
+    Converts a date string in YYYYMMDD format to a
+    datetime object
+
+    :param date_str: The date string to parse
+    :return: A datetime object representing the parsed date
+    """
+    try:
+        return datetime.strptime(date_str, "%Y%m%d").date()
+    except ValueError:
+        print("Invalid date format. Please provide the date in YYYYMMDD format.")
+        # Optionally, you can return None or any other default value instead of raising an exception
+        return None
+
+
+def run_exchange(currency_string, when=None):
     """
     Runs the exchange by splitting the given input string
     into a list of tuples containing the (amount, code),
     sum the exchanged values for the given currency.
 
-    :param currency_string:
-    :return:
+    :param currency_string: The currency string to parse.
+    :param when: Optional. The date to use for exchange rates.
+                 Defaults to datetime.now() if not provided.
+                 Can be a string in YYYYMMDD format or a datetime object.
+    :return: The result of the exchange.
     """
+    if when is None:
+        when = datetime.now().date()
+    elif isinstance(when, str):
+        when = parse_date(when)
+
     split_currency_string = currency_string.split(" to ")
     if len(split_currency_string) != 2:
         raise MissingCurrencyException()
@@ -53,6 +79,6 @@ def run_exchange(currency_string):
     currencies = parse_currency_string(split_currency_string[0])
     if currencies:
         for amount, from_currency in currencies:
-            result += convert_to(amount, from_currency, to_currency)
+            result += convert_to(amount, from_currency, to_currency, when)
 
-    return f"{result}{to_currency}"
+    return f"{result}{to_currency} on {when}"
