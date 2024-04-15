@@ -6,6 +6,26 @@ import pytest
 from src import currency_parser, exchange_rate, localization
 
 
+def test_convert_to():
+    mock_currency_rates = MagicMock()
+    mock_currency_rates.get_rate.return_value = 1.5
+    with patch("src.exchange_rate.CurrencyRates", return_value=mock_currency_rates):
+        amount = 100
+        from_currency = "USD"
+        to_currency = "EUR"
+        when = datetime.now()
+
+        converted_amount = exchange_rate.convert_to(
+            amount, from_currency, to_currency, when
+        )
+
+        mock_currency_rates.get_rate.assert_called_once_with(
+            from_currency, to_currency, when
+        )
+
+        assert converted_amount == amount * mock_currency_rates.get_rate.return_value
+
+
 def test_split_currency_amount_code():
     assert currency_parser.split_currency_amount_code("100EUR") == (100, "EUR")
     assert currency_parser.split_currency_amount_code("350USD") == (350, "USD")
@@ -38,28 +58,36 @@ def test_run_exchange_valid(mocked_convert_to):
     mocked_convert_to.return_value = 10
 
     currency_string = "10USD + 20EUR + 300BRL to GBP"
-    expected_result = "30GBP"  # 10$ for each time convert_to is called (3x)
-    assert currency_parser.run_exchange(currency_string) == expected_result
+    expected_result = (
+        "30GBP on 2024-01-01"  # 10$ for each time convert_to is called (3x)
+    )
+    assert currency_parser.run_exchange(currency_string, "20240101") == expected_result
 
 
-def test_convert_to():
-    mock_currency_rates = MagicMock()
-    mock_currency_rates.get_rate.return_value = 1.5
-    with patch("src.exchange_rate.CurrencyRates", return_value=mock_currency_rates):
-        amount = 100
-        from_currency = "USD"
-        to_currency = "EUR"
-        when = datetime.now()
+@patch("src.currency_parser.convert_to")
+def test_run_exchange_valid_when(mocked_convert_to):
+    mocked_convert_to.return_value = 10
 
-        converted_amount = exchange_rate.convert_to(
-            amount, from_currency, to_currency, when
-        )
+    currency_string = "10USD + 20EUR + 300BRL to GBP"
+    when = "20240101"
+    expected_result = "30GBP on 2024-01-01"
+    assert currency_parser.run_exchange(currency_string, when) == expected_result
 
-        mock_currency_rates.get_rate.assert_called_once_with(
-            from_currency, to_currency, when
-        )
 
-        assert converted_amount == amount * mock_currency_rates.get_rate.return_value
+@patch("src.currency_parser.convert_to")
+def test_run_exchange_invalid_when(mocked_convert_to, capsys):
+    mocked_convert_to.return_value = 10
+
+    currency_string = "10USD + 20EUR + 300BRL to GBP"
+    when = "12345"  # Not a valid YYYYMMDD date
+    expected_error_message = (
+        "Invalid date format. Please provide the date in YYYYMMDD format."
+    )
+
+    currency_parser.run_exchange(currency_string, when)
+
+    captured = capsys.readouterr()
+    assert captured.out.strip() == expected_error_message
 
 
 def test_run_exchange_invalid_string():
@@ -69,18 +97,18 @@ def test_run_exchange_invalid_string():
 
 
 def test_run_exchange_invalid_amount():
-    invalid_currency_string = "USD + EUR to GBP"
+    invalid_currency_string = "USD + EUR to GBP"  # Missing value
     with pytest.raises(ValueError):
         currency_parser.run_exchange(invalid_currency_string)
 
 
 def test_run_exchange_invalid_symbol():
-    invalid_currency_string = "100PPP to WWW"
-    result = currency_parser.run_exchange(invalid_currency_string)
-    assert result == "0.0WWW"
+    invalid_currency_string = "100PPP to WWW"  # Currency not supported
+    result = currency_parser.run_exchange(invalid_currency_string, "20240101")
+    assert result == "0.0WWW on 2024-01-01"
 
 
-def test_delocalized_currency():
+def test_delocalize_currency():
     result = localization.delocalize_currency("100,50", "EUR")
     assert result == 100.5
 
@@ -94,6 +122,6 @@ def test_delocalized_currency():
     assert result == 100000.05
 
 
-def test_delocalized_currency_wrong_input():
+def test_delocalize_currency_wrong_input():
     result = localization.delocalize_currency("100.500,00", "USD")
     assert result == 100.5
