@@ -1,5 +1,5 @@
 import sys
-from src.currency_parser import run_exchange
+from src.currency_conversion import run_exchange
 
 
 if __name__ == "__main__":

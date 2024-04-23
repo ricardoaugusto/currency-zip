@@ -27,23 +27,25 @@ which python
 /Users/ricardoaugusto/dev/currency-zip/.venv/bin/python
 ```
 
-Finally, install the `requirements.txt`:
+Install the `requirements.txt`:
 
 ```shell
 pip install -r requirements.txt
 ```
 
+Finally, create a free account at http://freecurrencyapi.com and update the `src/.env` with your apiKey.
+
 # Usage
 
 ```shell
 python czip.py "100EUR + 250USD + 1000BRL to GBP"
-438.46GBP on 2024-04-15
+438.46GBP on 20240415
 ```
 
 To get the exchange rate for a specific date, use `--when=YYYYMMDD`:
 ```shell
 python czip.py "100EUR + 250USD + 1000BRL to GBP" --when=20240101
-445.61GBP on 2024-01-01
+445.61GBP on 20240101
 ```
 
 # Testing
@@ -52,17 +54,16 @@ python czip.py "100EUR + 250USD + 1000BRL to GBP" --when=20240101
 pytest --cov=src tests --cov-report=html:tests/coverage
 ===== test session starts ======
 platform darwin -- Python 3.11.4, pytest-8.1.1, pluggy-1.4.0
-rootdir: /Users/ricardoaugusto/Developer/currency-zip
+rootdir: /Users/ricardoaugusto/dev/currency-zip
 plugins: cov-5.0.0
-collected 11 items                                                                                                                          
+collected 13 items
 
-tests/unit_test.py ...........                                                                                                        [100%]
+tests/unit_test.py ...........                                  [100%]
 
 ---------- coverage: platform darwin, python 3.11.4-final-0 ----------
 Coverage HTML written to dir tests/coverage
 
-
-===== 11 passed in 0.44s ======
+===== 13 passed in 0.29s ======
 ```
 
 # Contributing
