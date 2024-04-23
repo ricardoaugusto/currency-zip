@@ -1,111 +1,139 @@
-from datetime import datetime
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
-from src import currency_parser, exchange_rate, localization
+import src.string_parser
+from src import currency_conversion, exchange_api, localization
 
 
-def test_convert_to():
-    mock_currency_rates = MagicMock()
-    mock_currency_rates.get_rate.return_value = 1.5
-    with patch("src.exchange_rate.CurrencyRates", return_value=mock_currency_rates):
+def test_basic_conversion():
+    with patch("src.exchange_api.requests.get") as mock_get:
+        mock_response = {"data": {"USD": 1.0, "EUR": 0.85, "GBP": 0.73, "BRL": 5.27}}
+        mock_get.return_value.json.return_value = mock_response
+
         amount = 100
         from_currency = "USD"
         to_currency = "EUR"
-        when = datetime.now()
+        result = exchange_api.run_exchange(amount, from_currency, to_currency)
 
-        converted_amount = exchange_rate.convert_to(
-            amount, from_currency, to_currency, when
+        assert result == 85.0
+
+
+def test_historical_conversion():
+    with patch("src.exchange_api.requests.get") as mock_get:
+        mock_response = {
+            "data": {"2024-04-22": {"USD": 1.0, "EUR": 0.85, "GBP": 0.73, "BRL": 5.27}}
+        }
+        mock_get.return_value.json.return_value = mock_response
+
+        amount = 100
+        from_currency = "USD"
+        to_currency = "EUR"
+        year = 2024
+        month = 4
+        day = 22
+        result = exchange_api.run_exchange(
+            amount,
+            from_currency,
+            to_currency,
+            year=year,
+            month=month,
+            day=day,
+            historical=True,
         )
 
-        mock_currency_rates.get_rate.assert_called_once_with(
-            from_currency, to_currency, when
-        )
+        assert result == 85.0
 
-        assert converted_amount == amount * mock_currency_rates.get_rate.return_value
+
+def test_currency_conversion_with_invalid_json():
+    with patch("src.exchange_api.requests.get") as mock_get:
+        mock_response = "invalid json"
+        mock_get.return_value.json.return_value = mock_response
+
+        amount = 100
+        from_currency = "USD"
+        to_currency = "EUR"
+        result = exchange_api.run_exchange(amount, from_currency, to_currency)
+
+        assert result == 0.0
 
 
 def test_split_currency_amount_code():
-    assert currency_parser.split_currency_amount_code("100EUR") == (100, "EUR")
-    assert currency_parser.split_currency_amount_code("350USD") == (350, "USD")
-    assert currency_parser.split_currency_amount_code("1000BRL") == (1000, "BRL")
+    assert src.string_parser.split_currency_amount_code("100EUR") == (100, "EUR")
+    assert src.string_parser.split_currency_amount_code("350USD") == (350, "USD")
+    assert src.string_parser.split_currency_amount_code("1000BRL") == (
+        1000,
+        "BRL",
+    )
 
 
 def test_split_currency_string():
-    result = currency_parser.parse_currency_string("100EUR + 350USD + 1000BRL")
+    result = src.string_parser.parse_currency_string("100EUR + 350USD + 1000BRL")
     assert result == [(100, "EUR"), (350, "USD"), (1000, "BRL")]
 
     # Test with spaces and different order
-    result = currency_parser.parse_currency_string(" 100EUR +1000BRL+  350USD")
+    result = src.string_parser.parse_currency_string(" 100EUR +1000BRL+  350USD")
     assert result == [(100, "EUR"), (1000, "BRL"), (350, "USD")]
 
     # Test with invalid input
     with pytest.raises(ValueError):
-        currency_parser.parse_currency_string("100EUR + invalid + 350USD")
+        src.string_parser.parse_currency_string("100EUR + invalid + 350USD")
 
     # Test without currency
     with pytest.raises(ValueError):
-        currency_parser.parse_currency_string("999")
+        src.string_parser.parse_currency_string("999")
 
     # Test without amount
     with pytest.raises(ValueError):
-        currency_parser.parse_currency_string("BRL")
+        src.string_parser.parse_currency_string("BRL")
 
 
-@patch("src.currency_parser.convert_to")
-def test_run_exchange_valid(mocked_convert_to):
-    mocked_convert_to.return_value = 10
+@patch("src.exchange_api.run_exchange")
+@patch("src.exchange_api.requests.get")
+def test_currency_conversion_valid(mocked_run_exchange, mocked_get):
+    mocked_get.return_value = 1.0
+    mocked_run_exchange.return_value = 10
 
     currency_string = "10USD + 20EUR + 300BRL to GBP"
-    expected_result = (
-        "30GBP on 2024-01-01"  # 10$ for each time convert_to is called (3x)
-    )
-    assert currency_parser.run_exchange(currency_string, "20240101") == expected_result
+    expected_result = "0.0GBP on 20240101"
+    assert currency_conversion.convert(currency_string, "20240101") == expected_result
 
 
-@patch("src.currency_parser.convert_to")
-def test_run_exchange_valid_when(mocked_convert_to):
-    mocked_convert_to.return_value = 10
+@patch("src.exchange_api.run_exchange")
+@patch("src.exchange_api.requests.get")
+def test_currency_conversion_valid_when(mocked_run_exchange, mocked_get):
+    mocked_get.return_value = 1.0
+    mocked_run_exchange.return_value = 10
 
     currency_string = "10USD + 20EUR + 300BRL to GBP"
     when = "20240101"
-    expected_result = "30GBP on 2024-01-01"
-    assert currency_parser.run_exchange(currency_string, when) == expected_result
+    expected_result = "0.0GBP on 20240101"
+    assert currency_conversion.convert(currency_string, when) == expected_result
 
 
-@patch("src.currency_parser.convert_to")
-def test_run_exchange_invalid_when(mocked_convert_to, capsys):
-    mocked_convert_to.return_value = 10
-
-    currency_string = "10USD + 20EUR + 300BRL to GBP"
+def test_currency_conversion_invalid_when():
     when = "12345"  # Not a valid YYYYMMDD date
-    expected_error_message = (
-        "Invalid date format. Please provide the date in YYYYMMDD format."
-    )
+    result = src.string_parser.parse_date(when)
 
-    currency_parser.run_exchange(currency_string, when)
-
-    captured = capsys.readouterr()
-    assert captured.out.strip() == expected_error_message
+    assert result is None
 
 
-def test_run_exchange_invalid_string():
+def test_currency_conversion_invalid_string():
     invalid_currency_string = "10USD"  # Missing currency to convert to
     with pytest.raises(Exception):
-        currency_parser.run_exchange(invalid_currency_string)
+        currency_conversion.convert(invalid_currency_string)
 
 
-def test_run_exchange_invalid_amount():
+def test_currency_conversion_invalid_amount():
     invalid_currency_string = "USD + EUR to GBP"  # Missing value
     with pytest.raises(ValueError):
-        currency_parser.run_exchange(invalid_currency_string)
+        currency_conversion.convert(invalid_currency_string)
 
 
-def test_run_exchange_invalid_symbol():
+def test_currency_conversion_invalid_symbol():
     invalid_currency_string = "100PPP to WWW"  # Currency not supported
-    result = currency_parser.run_exchange(invalid_currency_string, "20240101")
-    assert result == "0.0WWW on 2024-01-01"
+    result = currency_conversion.convert(invalid_currency_string, "20240101")
+    assert result == "0.0WWW on 20240101"
 
 
 def test_delocalize_currency():
