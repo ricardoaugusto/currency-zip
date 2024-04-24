@@ -1,5 +1,5 @@
 import sys
-from src.currency_conversion import run_exchange
+from src.currency_conversion import convert
 
 
 if __name__ == "__main__":
@@ -15,5 +15,5 @@ if __name__ == "__main__":
         if option.startswith("--when="):
             when_param = option.split("=")[1]
 
-    result = run_exchange(currency_string, when_param)
+    result = convert(currency_string, when_param)
     print(result)
