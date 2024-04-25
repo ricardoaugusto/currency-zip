@@ -35,6 +35,12 @@ pip install -r requirements.txt
 
 Finally, create a free account at http://freecurrencyapi.com and update the `src/.env` with your apiKey.
 
+## Optional
+
+Terminal usage with `sh czip.sh`.
+
+Run `sudo sh install.sh` to use it as executable.
+
 # Usage
 
 ```shell
