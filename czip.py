@@ -1,8 +1,8 @@
 import sys
-from src.currency_conversion import run_exchange
+from src.currency_conversion import convert
 
 
-if __name__ == "__main__":
+def main():
     if len(sys.argv) < 2 or len(sys.argv) > 3:
         print("Usage: python czip.py <currency_string> [--when=<YYYYMMDD>]")
         sys.exit(1)
@@ -15,5 +15,9 @@ if __name__ == "__main__":
         if option.startswith("--when="):
             when_param = option.split("=")[1]
 
-    result = run_exchange(currency_string, when_param)
+    result = convert(currency_string, when_param)
     print(result)
+
+
+if __name__ == "__main__":
+    main()
