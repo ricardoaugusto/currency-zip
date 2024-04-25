@@ -1,8 +1,6 @@
 import re
 from datetime import datetime
 
-from src.localization import delocalize_currency
-
 
 def split_currency_amount_code(currency_string):
     """
@@ -10,9 +8,9 @@ def split_currency_amount_code(currency_string):
     :param currency_string:
     :return:
     """
-    match = re.match(r"(\d+)(\D+)", currency_string)
+    match = re.match(r"(\d+(?:[.,]\d+)?)(\D+)", currency_string)
     if match:
-        return delocalize_currency(match.group(1), match.group(2)), match.group(2)
+        return float(match.group(1).replace(",", ".")), match.group(2)
     else:
         raise ValueError("Invalid currency string")
 
@@ -25,11 +23,7 @@ def parse_currency_string(currency_string):
     :return:
     """
     currency_list = [
-        (int(amount), code)
-        for amount, code in (
-            split_currency_amount_code(part.strip())
-            for part in currency_string.split("+")
-        )
+        split_currency_amount_code(part.strip()) for part in currency_string.split("+")
     ]
     return currency_list
 
