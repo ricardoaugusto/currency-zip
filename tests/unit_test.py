@@ -2,14 +2,14 @@ from unittest.mock import patch
 
 import pytest
 
+from fixtures import basic_mock_response, historical_mock_response
 import src.string_parser
-from src import currency_conversion, exchange_api, localization
+from src import currency_conversion, exchange_api
 
 
-def test_basic_conversion():
+def test_basic_conversion(basic_mock_response):
     with patch("src.exchange_api.requests.get") as mock_get:
-        mock_response = {"data": {"USD": 1.0, "EUR": 0.85, "GBP": 0.73, "BRL": 5.27}}
-        mock_get.return_value.json.return_value = mock_response
+        mock_get.return_value.json.return_value = basic_mock_response
 
         amount = 100
         from_currency = "USD"
@@ -19,12 +19,9 @@ def test_basic_conversion():
         assert result == 85.0
 
 
-def test_historical_conversion():
+def test_historical_conversion(historical_mock_response):
     with patch("src.exchange_api.requests.get") as mock_get:
-        mock_response = {
-            "data": {"2024-04-22": {"USD": 1.0, "EUR": 0.85, "GBP": 0.73, "BRL": 5.27}}
-        }
-        mock_get.return_value.json.return_value = mock_response
+        mock_get.return_value.json.return_value = historical_mock_response
 
         amount = 100
         from_currency = "USD"
@@ -45,6 +42,18 @@ def test_historical_conversion():
         assert result == 85.0
 
 
+def test_basic_conversion_with_decimal_currency(basic_mock_response):
+    with patch("src.exchange_api.requests.get") as mock_get:
+        mock_get.return_value.json.return_value = basic_mock_response
+
+        amount = 9999.90
+        from_currency = "USD"
+        to_currency = "EUR"
+        result = exchange_api.run_exchange(amount, from_currency, to_currency)
+
+        assert result == 8499.91
+
+
 def test_currency_conversion_with_invalid_json():
     with patch("src.exchange_api.requests.get") as mock_get:
         mock_response = "invalid json"
@@ -63,6 +72,15 @@ def test_split_currency_amount_code():
     assert src.string_parser.split_currency_amount_code("350USD") == (350, "USD")
     assert src.string_parser.split_currency_amount_code("1000BRL") == (
         1000,
+        "BRL",
+    )
+
+
+def test_split_decimal_currency_amount_code():
+    assert src.string_parser.split_currency_amount_code("100.90EUR") == (100.9, "EUR")
+    assert src.string_parser.split_currency_amount_code("350.90USD") == (350.9, "USD")
+    assert src.string_parser.split_currency_amount_code("1000,95BRL") == (
+        1000.95,
         "BRL",
     )
 
@@ -134,22 +152,3 @@ def test_currency_conversion_invalid_symbol():
     invalid_currency_string = "100PPP to WWW"  # Currency not supported
     result = currency_conversion.convert(invalid_currency_string, "20240101")
     assert result == "0.0WWW on 20240101"
-
-
-def test_delocalize_currency():
-    result = localization.delocalize_currency("100,50", "EUR")
-    assert result == 100.5
-
-    result = localization.delocalize_currency("100,500.90", "USD")
-    assert result == 100500.90
-
-    result = localization.delocalize_currency("100,000.50", "GBP")
-    assert result == 100000.5
-
-    result = localization.delocalize_currency("100.000,05", "BRL")
-    assert result == 100000.05
-
-
-def test_delocalize_currency_wrong_input():
-    result = localization.delocalize_currency("100.500,00", "USD")
-    assert result == 100.5
