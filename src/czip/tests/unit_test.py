@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 import pytest
 
-from fixtures import basic_mock_response, historical_mock_response
+from src.czip.tests.fixtures import basic_mock_response, historical_mock_response
 import src
 from src.czip import currency_conversion, exchange_api, string_parser
 
