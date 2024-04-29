@@ -4,3 +4,6 @@ pytest-cov
 coverage
 python-dotenv
 requests
+fastapi
+pydantic
+uvicorn
