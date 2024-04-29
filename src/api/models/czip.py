@@ -1,5 +1,7 @@
 from pydantic import BaseModel
+from typing import Optional
 
 
 class InputData(BaseModel):
-    data: str
+    currency: str
+    when: Optional[str] = None

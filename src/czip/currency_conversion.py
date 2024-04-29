@@ -19,9 +19,7 @@ def convert(currency_string, when=None):
     """
     historical = True
     if when is None or not isinstance(when, str):
-        current_datetime = datetime.now()
-        one_hour_ago = current_datetime - timedelta(days=1)
-        when = one_hour_ago.date().strftime("%Y%m%d")
+        when = when_when_is_none()
         historical = False
 
     year, month, day = parse_date(when)
@@ -42,3 +40,15 @@ def convert(currency_string, when=None):
             )
 
     return f"{result}{to_currency} on {when}"
+
+
+def when_when_is_none():
+    """
+    Returns the default when value if no date is provided.
+
+    :return: current date one hour ago
+    """
+    current_datetime = datetime.now()
+    one_hour_ago = current_datetime - timedelta(days=1)
+    when = one_hour_ago.date().strftime("%Y%m%d")
+    return when
