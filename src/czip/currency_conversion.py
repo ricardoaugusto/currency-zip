@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 
-from src.exceptions.missing_currency_exception import MissingCurrencyException
-from src.exchange_api import run_exchange
-from src.string_parser import parse_currency_string, parse_date
+from src.czip.exceptions.missing_currency_exception import MissingCurrencyException
+from src.czip.exchange_api import run_exchange
+from src.czip.string_parser import parse_currency_string, parse_date
 
 
 def convert(currency_string, when=None):

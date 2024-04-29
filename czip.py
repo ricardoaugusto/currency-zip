@@ -1,5 +1,5 @@
 import sys
-from src.currency_conversion import convert
+from src.czip.currency_conversion import convert
 
 
 def main():
