@@ -54,6 +54,34 @@ python czip.py "100EUR + 250USD + 1000BRL to GBP" --when=20240101
 445.61GBP on 20240101
 ```
 
+## API
+
+You can start a local API with:
+
+```shell
+❯ uvicorn src.api.router:app --reload
+INFO:     Will watch for changes in these directories: ['/Users/indicativa/Developer/currency-zip']
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [10881] using StatReload
+INFO:     Started server process [10885]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+```
+
+Open on your browser http://127.0.0.1:8000. Optional host flag: `--host=192.168.1.123`.
+
+Send a POST request like so:
+
+```shell
+curl --request POST \
+  --url http://127.0.0.1:8000/convert \
+  --header 'Content-Type: application/json' \
+  --data '{
+	"currency": "300EUR + 1500BRL to EUR",
+	"when": "20240101"
+}'
+```
+
 ## Optional
 
 If you installed it with `install.sh`, then you can run:
