@@ -1,6 +1,6 @@
 # currency-zip
 
-![version](https://img.shields.io/badge/version-v0.2.0-white) ![pytest](https://img.shields.io/badge/coverage-100%25-green) ![forks](https://img.shields.io/github/forks/ricardoaugusto/currency-zip
+![version](https://img.shields.io/badge/version-v0.4.1-white) ![pytest](https://img.shields.io/badge/coverage-100%25-green) ![forks](https://img.shields.io/github/forks/ricardoaugusto/currency-zip
 )
 
 # Purpose
