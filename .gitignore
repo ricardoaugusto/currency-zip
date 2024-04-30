@@ -2,6 +2,5 @@
 .vscode
 .venv
 **/.coverage
+**/coverage
 /src/czip/.env
-!/src/czip/tests/coverage/
-!/src/api/tests/coverage/
