@@ -1,5 +1,6 @@
 .idea
 .vscode
 .venv
-.coverage
-/src/.env
+**/.coverage
+**/coverage
+/src/czip/.env
