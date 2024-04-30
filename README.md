@@ -68,19 +68,21 @@ Enter the date parameter (YYYYMMDD) or press Enter to skip:
 # Testing
 
 ```shell
-pytest --cov=src tests --cov-report=html:tests/coverage
+pytest --cov=src/czip/tests --cov=src/api/tests --cov-report=html:src/tests/coverage
 ===== test session starts ======
-platform darwin -- Python 3.11.4, pytest-8.1.1, pluggy-1.4.0
+platform darwin -- Python 3.12.0, pytest-8.1.1, pluggy-1.5.0
 rootdir: /Users/ricardoaugusto/dev/currency-zip
-plugins: cov-5.0.0
-collected 13 items
+plugins: cov-5.0.0, anyio-4.3.0
+collected 24 items                                                                                                                          
 
-tests/unit_test.py ...........                                  [100%]
+src/api/tests/api_test.py .....                                                                                                       [ 20%]
+src/czip/tests/czip_test.py ......                                                                                                    [ 45%]
+src/czip/tests/unit_test.py .............                                                                                             [100%]
 
----------- coverage: platform darwin, python 3.11.4-final-0 ----------
-Coverage HTML written to dir tests/coverage
+---------- coverage: platform darwin, python 3.12.0-final-0 ----------
+Coverage HTML written to dir src/tests/coverage
 
-===== 13 passed in 0.29s ======
+===== 24 passed in 4.05s ======
 ```
 
 # Contributing
