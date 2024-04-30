@@ -54,6 +54,14 @@ python czip.py "100EUR + 250USD + 1000BRL to GBP" --when=20240101
 445.61GBP on 20240101
 ```
 
+If you installed `czip` as executable with `install.sh` then you can run it interactively:
+
+```shell
+czip
+Enter the currency string (e.g., '1000USD to EUR'): 1000USD to EUR
+Enter the date parameter (YYYYMMDD) or press Enter to skip: 
+934.46EUR on 20240424
+```
 ## API
 
 You can start a local API with:
@@ -83,17 +91,6 @@ curl --request POST \
 ```
 
 Check the full API Documentation here: http://127.0.0.1:8000/docs.
-
-## Optional
-
-If you installed it with `install.sh`, then you can run:
-
-```shell
-czip
-Enter the currency string (e.g., '1000USD to EUR'): 1000USD to EUR
-Enter the date parameter (YYYYMMDD) or press Enter to skip: 
-934.46EUR on 20240424
-```
 
 # Testing
 
