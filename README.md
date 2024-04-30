@@ -82,6 +82,8 @@ curl --request POST \
 }'
 ```
 
+Check the full API Documentation here: http://127.0.0.1:8000/docs.
+
 ## Optional
 
 If you installed it with `install.sh`, then you can run:
