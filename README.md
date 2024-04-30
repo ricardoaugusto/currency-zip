@@ -60,7 +60,7 @@ You can start a local API with:
 
 ```shell
 ❯ uvicorn src.api.router:app --reload
-INFO:     Will watch for changes in these directories: ['/Users/indicativa/Developer/currency-zip']
+INFO:     Will watch for changes in these directories: ['/Users/ricardoaugusto/dev/currency-zip']
 INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 INFO:     Started reloader process [10881] using StatReload
 INFO:     Started server process [10885]
