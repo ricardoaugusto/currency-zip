@@ -8,6 +8,7 @@ env_path = os.path.join(script_dir, ".env")
 
 env = dotenv_values(env_path)
 api_key = env.get("API_KEY")
+currencies = env.get("CURRENCIES")
 
 
 def run_exchange(
@@ -22,7 +23,7 @@ def run_exchange(
     try:
         endpoint = "historical" if historical else "latest"
 
-        exchange_url = f"https://api.freecurrencyapi.com/v1/{endpoint}?apikey={api_key}&base_currency={from_currency}&currencies=USD,EUR,GBP,BRL"
+        exchange_url = f"https://api.freecurrencyapi.com/v1/{endpoint}?apikey={api_key}&base_currency={from_currency}&currencies={currencies}"
         if historical:
             exchange_url += f"&date={year}-{month}-{day}"
 

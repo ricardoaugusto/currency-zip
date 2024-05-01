@@ -1,6 +1,6 @@
 # currency-zip
 
-![version](https://img.shields.io/badge/version-v0.4.1-white) ![pytest](https://img.shields.io/badge/coverage-100%25-green) ![forks](https://img.shields.io/github/forks/ricardoaugusto/currency-zip
+![version](https://img.shields.io/badge/version-v0.4.2-white) ![pytest](https://img.shields.io/badge/coverage-100%25-green) ![forks](https://img.shields.io/github/forks/ricardoaugusto/currency-zip
 )
 
 # Purpose
@@ -8,6 +8,13 @@
 To make banking/invoicing easier. Add currency conversion between multiple income sources and aggregate the total into a single currency.
 
 # Installation
+
+Steps:
+1. Clone this repo
+2. Create and activate the .venv
+3. Install the requirements
+4. Get an API_KEY
+5. Optional: install the czip.sh executable
 
 Clone the repository and create a Python venv:
 
@@ -33,7 +40,12 @@ Install the `requirements.txt`:
 pip install -r requirements.txt
 ```
 
-Finally, create a free account at http://freecurrencyapi.com and update the `src/.env` with your apiKey.
+
+Create a free account at http://freecurrencyapi.com and update the `src/.env` with your API_KEY.
+
+Finally, to make the responses shorter and faster, enable in the `src/.env` only the currencies you'll be using.
+
+A full list of currencies is available at https://api.freecurrencyapi.com/v1/currencies.
 
 ## Optional
 
@@ -113,3 +125,12 @@ Coverage HTML written to dir src/tests/coverage
 ```
 
 # Contributing
+
+Thank you for your interest in currency-zip! Before you start working and submit a PR, please review the instructions below.
+
+- Lint your code with `black`
+- Achieve 100% test coverage
+- Make sure your tests pass
+- Update the readme.md if needed
+
+Thanks!
